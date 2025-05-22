@@ -5,11 +5,12 @@ logger = getLogger(__name__)
 
 
 class User:
+    # TODO: Переделать под @dataclass
     def __init__(
-            self, uid: int, username: str, lvl: int = 1, exp: int = 100,
+            self, _id: int, username: str, lvl: int = 1, exp: int = 100,
             max_hp: int = 100, hp: int = 100, regen_hp: int = 0, damage: int = 2):
 
-        self.uid = uid
+        self._id = _id
         self.username = username
         self.lvl = lvl
         self.exp = exp

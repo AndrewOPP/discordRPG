@@ -19,7 +19,7 @@ dictLogConfig = {
             "style": "%",
             "level_styles": {
                 "debug": {"color": "white"},
-                "info": {"color": "green"},
+                "info": {"color": "cyan"},
                 "warning": {"color": "yellow"},
                 "error": {"color": "red"},
                 "critical": {"color": "red", "bold": True},

@@ -21,13 +21,12 @@ class Database:
 
     async def fetch_all(self, query: str, params: Union[Tuple, List] = (), row: bool = False) -> List[Tuple]:
         """Выполняет SELECT запрос и возвращает записи"""
-        # TODO: ASYNC
-        with self._connect() as con:
+        async with await self._connect() as con:
             if row:
                 con.row_factory = sql.Row
-            cursor = con.cursor()
-            cursor.execute(query, params)
-            return cursor.fetchall()
+            async with con.cursor() as cur:
+                await cur.execute(query, params)
+                return await cur.fetchall()
 
     async def fetch_one(self, query: str, params: Union[Tuple, List] = (), row: bool = False) -> List[Tuple]:
         """Выполняет SELECT запрос и возвращает записи"""
@@ -44,13 +43,26 @@ db = Database()
 
 async def init_db():
     await db.execute_query("""
+CREATE TABLE IF NOT EXISTS roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    description TEXT,
+    max_hp INT,
+    regen_hp INT,
+    damage INT
+);    
+""")
+
+    await db.execute_query("""
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY,
     username TEXT,
+    role INT,
     lvl INT,
     exp INT,
     max_hp INT,
     regen_hp INT,
-    damage INT
+    damage INT,
+    FOREIGN KEY (role) REFERENCES roles(id)
 );
 """)
