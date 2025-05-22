@@ -2,6 +2,13 @@ import asyncio
 import discord
 from discord import Message
 from src.config import settings
+from src.logs import getLogger
+
+getLogger("discord.client").setLevel("WARNING")
+getLogger("discord.gateway").setLevel("WARNING")
+
+
+logger = getLogger(__name__)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -11,7 +18,7 @@ client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f'START {client.user}')
+    logger.info(f'START {client.user}')
 
 
 @client.event

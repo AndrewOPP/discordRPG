@@ -2,4 +2,4 @@
 .venv/
 
 .env
-src/logs/logs.log
+src/logs/*.log
