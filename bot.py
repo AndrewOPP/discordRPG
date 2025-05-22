@@ -9,29 +9,33 @@ from discord.ext import commands
 getLogger("discord.client").setLevel("WARNING")
 getLogger("discord.gateway").setLevel("WARNING")
 
-
 logger = getLogger(__name__)
 
-
 bot = commands.Bot(command_prefix="/", intents=discord.Intents.all())
+
 
 @bot.event
 async def on_ready():
     logger.info(f'START {bot.user}')
+    bot.tree.clear_commands(guild=discord.Object(id=1099720037000020088))
+    await bot.tree.sync()
 
 
 @bot.event
 async def on_message(message: Message):
     print(message.content)
 
+
 async def load_commands():
     for filename in os.listdir("./src/cogs"):
         if filename.endswith(".py") and filename != "__init__.py":
             await bot.load_extension(f"src.cogs.{filename[:-3]}")
 
+
 async def main():
     await load_commands()
     await bot.start(settings.discord.token)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
