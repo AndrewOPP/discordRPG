@@ -31,13 +31,12 @@ class Database:
 
     async def fetch_one(self, query: str, params: Union[Tuple, List] = (), row: bool = False) -> List[Tuple]:
         """Выполняет SELECT запрос и возвращает записи"""
-        # TODO: ASYNC
-        with self._connect() as con:
+        async with await self._connect() as con:
             if row:
                 con.row_factory = sql.Row
-            cursor = con.cursor()
-            cursor.execute(query, params)
-            return cursor.fetchone()
+            async with con.cursor() as cur:
+                await cur.execute(query, params)
+                return await cur.fetchone()
 
 
 db = Database()
@@ -49,10 +48,9 @@ CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY,
     username TEXT,
     lvl INT,
-    xp INT,
+    exp INT,
     max_hp INT,
     regen_hp INT,
-    damage INT,
-    battle_round INT
+    damage INT
 );
 """)

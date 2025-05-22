@@ -1,17 +1,10 @@
 from colorama import Fore, Style, init
+from coloredlogs import ColoredFormatter
 from src.config import settings
 
 init(convert=settings.logging.cmd_convert_revert)
 
 LEVEL = "DEBUG" if settings.logging.debug else "INFO"
-
-console_format = (
-    f"{Fore.WHITE}%(asctime)s{Style.RESET_ALL} | "
-    f"{Fore.GREEN}%(levelname)-8s{Style.RESET_ALL} | "
-    f"{Fore.CYAN}%(name)s{Style.RESET_ALL} | "
-    f"{Fore.CYAN}%(lineno)d{Style.RESET_ALL} - "
-    f"{Fore.WHITE}%(message)s{Style.RESET_ALL}"
-)
 
 file_format = "%(asctime)s | %(levelname)-8s| %(name)s | %(lineno)d - %(message)s"
 
@@ -19,8 +12,23 @@ dictLogConfig = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "stream_format": {
-            "format": console_format,
+        "colored": {
+            "()": ColoredFormatter,
+            "fmt": file_format,
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+            "style": "%",
+            "level_styles": {
+                "debug": {"color": "white"},
+                "info": {"color": "green"},
+                "warning": {"color": "yellow"},
+                "error": {"color": "red"},
+                "critical": {"color": "red", "bold": True},
+            },
+            "field_styles": {
+                "asctime": {"color": "white"},
+                "name": {"color": "blue"},
+                "lineno": {"color": "blue"},
+            },
         },
         "file_format": {
             "format": file_format,
@@ -30,7 +38,7 @@ dictLogConfig = {
         "console": {
             "class": "logging.StreamHandler",
             "level": LEVEL,
-            "formatter": "stream_format",
+            "formatter": "colored",
             "stream": "ext://sys.stdout",
         },
         "file": {

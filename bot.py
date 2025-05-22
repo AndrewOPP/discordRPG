@@ -9,6 +9,7 @@ from discord.ext import commands
 getLogger("discord.client").setLevel("WARNING")
 getLogger("discord.gateway").setLevel("WARNING")
 getLogger("discord.http").setLevel("WARNING")
+getLogger("discord.webhook").setLevel("WARNING")
 
 logger = getLogger(__name__)
 
@@ -18,7 +19,7 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 @bot.event
 async def on_ready():
-    logger.info(f'-- Bot {bot.user} Start')
+    logger.info(f'Bot {bot.user} Start')
     await bot.tree.sync()
 
 
