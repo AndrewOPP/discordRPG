@@ -1,23 +1,27 @@
-import sqlite3 as sql
+import aiosqlite as sql
 from typing import Union, Tuple, List
+from src.logs import getLogger
+
+getLogger("aiosqlite").setLevel("WARNING")
 
 
 class Database:
     def __init__(self):
         self.db_path = "src/data/database.db"
 
-    def _connect(self):
+    async def _connect(self):
         return sql.connect(self.db_path)
 
-    def execute_query(self, query: str, params: Union[Tuple, List] = ()) -> None:
+    async def execute_query(self, query: str, params: Union[Tuple, List] = ()) -> None:
         """Выполняет запрос без возврата данных (INSERT, UPDATE, DELETE)."""
-        with self._connect() as con:
-            cursor = con.cursor()
-            cursor.execute(query, params)
-            con.commit()
+        async with await self._connect() as con:
+            async with con.cursor() as cur:
+                await cur.execute(query, params)
+            await con.commit()
 
-    def fetch_all(self, query: str, params: Union[Tuple, List] = (), row: bool = False) -> List[Tuple]:
+    async def fetch_all(self, query: str, params: Union[Tuple, List] = (), row: bool = False) -> List[Tuple]:
         """Выполняет SELECT запрос и возвращает записи"""
+        # TODO: ASYNC
         with self._connect() as con:
             if row:
                 con.row_factory = sql.Row
@@ -25,8 +29,9 @@ class Database:
             cursor.execute(query, params)
             return cursor.fetchall()
 
-    def fetch_one(self, query: str, params: Union[Tuple, List] = (), row: bool = False) -> List[Tuple]:
+    async def fetch_one(self, query: str, params: Union[Tuple, List] = (), row: bool = False) -> List[Tuple]:
         """Выполняет SELECT запрос и возвращает записи"""
+        # TODO: ASYNC
         with self._connect() as con:
             if row:
                 con.row_factory = sql.Row
@@ -38,8 +43,8 @@ class Database:
 db = Database()
 
 
-def init_db():
-    db.execute_query("""
+async def init_db():
+    await db.execute_query("""
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY,
     username TEXT,

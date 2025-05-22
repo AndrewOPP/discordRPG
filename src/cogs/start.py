@@ -1,6 +1,8 @@
-import discord
 from discord.ext import commands
-from discord import app_commands
+from discord import app_commands, Interaction, InteractionResponse, Embed
+from src.logs import getLogger
+
+logger = getLogger(__name__)
 
 
 class Start(commands.Cog):
@@ -9,11 +11,21 @@ class Start(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"{__name__} is online!")
+        logger.info(f"{__name__} is online!")
 
-    @app_commands.command(name="start", description="This command start the game")
-    async def hello(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f"{interaction.user.mention}, ты готов к бою?")
+    @app_commands.command(name="start", description="Начни путешествие и трахни гоблинов")
+    async def cmd_start(self, inter: Interaction):
+        response: InteractionResponse = inter.response
+
+        embed = Embed(
+            title="🏟️ Арена Гоблинов",
+            description=f"`{inter.user.name.capitalize()}`, ты ступаешь на окровавленный песок перед ареной...\n"
+            "Перед тобой - мертвые останки зеленых тварей, кажется кто-то хорошо потрудился.\n\n"
+            "Готов стать следующим goblin-slayer?")
+        embed.set_author(name=f"Сосунок - {inter.user.name}", icon_url=inter.user.avatar)
+        embed.set_footer(text="- Убивай или тебя будут теребить в дыру")
+
+        await response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot):
