@@ -20,10 +20,11 @@ class User:
         self.damage = damage
 
     @classmethod
-    async def load(cls, uid: int):
+    async def load(cls, uid: int) -> "User":
         row = await db.fetch_one("SELECT * FROM users WHERE id = ?", (uid,), row=True)
         if row:
             logger.debug(row)
+            return row
         else:
             logger.debug(f"User: {uid} not found")
 

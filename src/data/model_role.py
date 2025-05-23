@@ -1,8 +1,6 @@
 import random
-
 from attr import dataclass
 from discord import NotFound
-
 from src.data.db import db
 from src.logs import getLogger
 

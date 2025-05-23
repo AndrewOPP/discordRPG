@@ -11,9 +11,11 @@ logger = getLogger(__name__)
 
 class CreateProfileView(View):
     """Кнопка для создания профиль юзера, при первом запуске. Выбирает рандомно ему роль"""
+
     @discord.ui.button(label="Создать гладиатора", style=ButtonStyle.green)
-    async def create_profile_button(self, inter: Interaction, button: Button):
+    async def clb_profile_button(self, inter: Interaction, button: Button):
         response: InteractionResponse = inter.response
+
         role = await Role.load_random()
         logger.debug(role.name)
 
