@@ -38,6 +38,7 @@ class Database:
                 return await cur.fetchone()
 
 
+
 db = Database()
 
 
@@ -46,7 +47,7 @@ async def init_db():
 CREATE TABLE IF NOT EXISTS roles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
-    description TEXT,
+    description TEXT, 
     max_hp INT,
     regen_hp INT,
     damage INT
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS users (
     lvl INT,
     exp INT,
     max_hp INT,
+    hp INT,
     regen_hp INT,
     damage INT,
     FOREIGN KEY (role) REFERENCES roles(id)

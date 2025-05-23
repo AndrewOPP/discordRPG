@@ -21,6 +21,7 @@ class Role:
         row = await db.fetch_one("SELECT * FROM roles WHERE id = ?", (_id,), row=True)
         if row:
             logger.debug(row)
+            return cls(**row)
         else:
             logger.error(f"Role: {_id} not found")
             raise NotFound
