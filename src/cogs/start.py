@@ -1,25 +1,14 @@
 import discord
 from discord.ext import commands
-from discord import app_commands, Interaction, InteractionResponse, Embed, Colour, ButtonStyle
+from discord import app_commands, Interaction, InteractionResponse, ButtonStyle
 from discord.ui import Button, View
+from src.cogs.fight import StartFightView
 from src.logs import getLogger
 from src.data.model_user import User
 from src.data.model_role import Role
 from src.utils import create_embed
 
 logger = getLogger(__name__)
-
-
-class StartFight(View):
-    """Кнопка для создания профиль юзера, при первом запуске. Выбирает рандомно ему роль"""
-
-    @discord.ui.button(label="В бой!", style=ButtonStyle.red)
-    async def clb_profile_button(self, inter: Interaction, button: Button):
-        response: InteractionResponse = inter.response
-
-        user = await User.load(inter.user.id)
-
-        logger.debug(user.username)
 
 
 class CreateProfileView(View):
@@ -39,10 +28,10 @@ class CreateProfileView(View):
                         f"Отныне твоя история такова: {role.description}."
                         f"Ступай и докажи, что ты заслуживаешь это звание!")
         await inter.message.delete()
-        await response.send_message(embed=embed, view=StartFight())
+        await response.send_message(embed=embed, view=StartFightView())
 
 
-class Start(commands.Cog):
+class StartCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -71,8 +60,8 @@ class Start(commands.Cog):
                 inter.user,
                 title="🏟️ Арена Гоблинов",
                 description=f"`{user.username}`, ты уже есть в наших рядах. Твое призвание - {role.name}!?")
-            await response.send_message(embed=embed, view=StartFight())
+            await response.send_message(embed=embed, view=StartFightView())
 
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Start(bot))
+    await bot.add_cog(StartCog(bot))
