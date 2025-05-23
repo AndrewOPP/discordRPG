@@ -1,4 +1,7 @@
+from random import randint
+
 import discord
+import asyncio
 from discord import ButtonStyle, Interaction, InteractionResponse
 from discord.ext import commands
 from discord.ui import View, Button
@@ -19,7 +22,18 @@ class FightView(View):
     @discord.ui.button(label="Атака", style=ButtonStyle.red)
     async def clb_attack_button(self, inter: Interaction, button: Button):
         response: InteractionResponse = inter.response
-        self.battle.player_attack()
+        self.battle.player_attack(button)
+        await response.edit_message(embed=self.battle.create_embed_battle(), view=self)
+
+        progres_bar = ["▱ " for _ in range(6)]
+        for i in range(len(progres_bar)):
+            progres_bar[i] = "▰ "
+            await inter.message.edit(embed=self.battle.create_embed_battle(progres_bar), view=self)
+            await asyncio.sleep(randint(2, 8) / 10)
+
+        self.battle.enemy_attack(button)
+
+        await inter.message.edit(embed=self.battle.create_embed_battle(), view=self)
 
     @discord.ui.button(label="Побег с позором", style=ButtonStyle.gray)
     async def clb_run_button(self, inter: Interaction, button: Button):
@@ -36,9 +50,8 @@ class StartFightView(View):
         enemy = Enemy.generate_enemy()
         battle = Battle(user, enemy)
         logger.debug(f"\n{user}\n{enemy}")
-
         await inter.message.delete()
-        await response.send_message(embed=battle.start_battle(), view=FightView(battle))
+        await response.send_message(embed=battle.create_embed_battle(), view=FightView(battle))
 
 
 class FightCog(commands.Cog):
