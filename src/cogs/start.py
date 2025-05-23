@@ -5,8 +5,10 @@ from discord.ui import Button, View
 from src.logs import getLogger
 from src.data.model_user import User
 from src.data.model_role import Role
+from src.utils import create_embed
 
 logger = getLogger(__name__)
+
 
 class StartFight(View):
     """Кнопка для создания профиль юзера, при первом запуске. Выбирает рандомно ему роль"""
@@ -29,16 +31,14 @@ class CreateProfileView(View):
         user = inter.user
         role = await Role.load_random()
         await User.create_user(role, user)
-
-        embed = Embed(
+        embed = create_embed(
+            inter.user,
             title="🏟️ Арена Гоблинов",
             description=f"`{inter.user.name.capitalize()}`, ты успешно принят в наши ряды! Наши почетные командиры, "
-                        f"посоветовавшись, удостоили тебя звания '{role.name}'. Отныне твоя история такова: {role.description}"
-                        f". Ступай и докажи, что ты заслуживаешь это звание!",
-            colour=Colour.red())
-        embed.set_author(name=f"Сосунок - {inter.user.name}", icon_url=inter.user.avatar)
-        embed.set_footer(text="- Убивай или тебя будут теребить в дыру")
-
+                        f"посоветовавшись, удостоили тебя звания '{role.name}'.\n"
+                        f"Отныне твоя история такова: {role.description}."
+                        f"Ступай и докажи, что ты заслуживаешь это звание!")
+        await inter.message.delete()
         await response.send_message(embed=embed, view=StartFight())
 
 
@@ -57,25 +57,22 @@ class Start(commands.Cog):
         user = await User.load(inter.user.id)
 
         if not user:
-            embed = Embed(
+            embed = create_embed(
+                inter.user,
                 title="🏟️ Арена Гоблинов",
                 description=f"`{inter.user.name.capitalize()}`, ты ступаешь на окровавленный песок перед ареной...\n"
                 "Перед тобой - мертвые останки зеленых тварей, кажется кто-то хорошо потрудился.\n\n"
-                "Готов стать следующим goblin-slayer?",
-                colour=Colour.dark_green())
-            embed.set_author(name=f"Сосунок - {inter.user.name}", icon_url=inter.user.avatar)
-            embed.set_footer(text="- Убивай или тебя будут теребить в дыру")
-
+                "Готов стать следующим goblin-slayer?")
             await response.send_message(embed=embed, view=CreateProfileView())
 
         else:
             role = await Role.load(user.role)
-            embed = Embed(
+            embed = create_embed(
+                inter.user,
                 title="🏟️ Арена Гоблинов",
-                description=f"`{user.username}`, ты уже есть в наших рядах. Твое призвание - {role.name}!?",
-                colour=Colour.red())
-
+                description=f"`{user.username}`, ты уже есть в наших рядах. Твое призвание - {role.name}!?")
             await response.send_message(embed=embed, view=StartFight())
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Start(bot))

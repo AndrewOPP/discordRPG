@@ -20,10 +20,10 @@ class Role:
     async def load(cls, _id: int):
         row = await db.fetch_one("SELECT * FROM roles WHERE id = ?", (_id,), row=True)
         if row:
-            logger.debug(row)
+            logger.debug(f"Get Role: {row['name']}")
             return cls(**row)
         else:
-            logger.error(f"Role: {_id} not found")
+            logger.error(f"Get Role: {_id} not found")
             raise NotFound
 
     @classmethod
