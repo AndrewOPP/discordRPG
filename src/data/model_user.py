@@ -17,6 +17,12 @@ class User:
     regen_hp: int
     damage: int
 
+    def is_alive(self):
+        if self.hp > 0:
+            return True
+
+        return False
+
     @classmethod
     async def load(cls, uid: int) -> "User":
         row = await db.fetch_one("SELECT * FROM users WHERE id = ?", (uid,), row=True)

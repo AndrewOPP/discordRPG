@@ -20,8 +20,14 @@ class Enemy:
             "name": "Гоблин",
             "lvl": 1,
             "max_hp": 50,
-            "hp": 50,
+            "hp": 5,
             "regen_hp": 0,
             "damage": 2,
         }
         return cls(**stats)
+
+    def is_alive(self):
+        if self.hp > 0:
+            return True
+
+        return False

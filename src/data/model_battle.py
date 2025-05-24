@@ -13,8 +13,6 @@ logger = getLogger("Fight")
 
 class Battle:
     def __init__(self, player: User, enemy):
-        # TODO сделать удобный генератор embed для редактирования его постоянно
-        # TODO Лог боя внизу сообщения
         # TODO Гоблин может сбежать при низком хп и будет победа
         # TODO Награды за бой от скейла уровня гоблина
         self.player: User = player
@@ -22,28 +20,72 @@ class Battle:
         self.turn: str = "player"
         self.round_num: int = 1
         self.last_battle_log: str = None
+        self.end_fight = False
+
+    def finish_the_fight(self):
+        if self.turn == "player":
+            log_text = f"Лог: 👤 Ваш удар сокрушает гоблина!"
+            logger.debug(f"{log_text} Здоровье гоблина: {self.enemy.hp}/{self.enemy.max_hp}")
+
+        else:
+            log_text = f"Лог: 👹 Удар гоблина размазал вас по стенке!"
+            logger.debug(f"{log_text} Здоровье игрока: {self.player.hp}/{self.player.max_hp}")
+
+        self.last_battle_log = log_text
+        self.end_fight = True
+
+        # TODO отдельную функцию для выдачи награды и сохренение в бд
+        # TODO + coins
 
     def player_attack(self, button):
-        # TODO Проверка живой ли гоблин и завершать битву
         button.disabled = True
         self.enemy.hp -= self.player.damage
-        self.turn = "enemy"
-        self.round_num += 1
+        if self.enemy.is_alive():
+            self.turn = "enemy"
+            self.round_num += 1
 
-        log_text = f"Лог: 👤 Ваш удар по гоблину на {self.player.damage} урона"
-        logger.debug(f"{log_text} Здоровье гоблина: {self.enemy.hp}/{self.enemy.max_hp}")
-        self.last_battle_log = log_text
+            log_text = f"Лог: 👤 Ваш удар по гоблину на {self.player.damage} урона"
+            logger.debug(f"{log_text} Здоровье гоблина: {self.enemy.hp}/{self.enemy.max_hp}")
+            self.last_battle_log = log_text
+            return
+
+        self.finish_the_fight()
 
     def enemy_attack(self, button):
         button.disabled = False
-
         self.player.hp -= self.enemy.damage
-        self.turn = "player"
-        self.round_num += 1
+        if self.player.is_alive():
+            self.turn = "player"
+            self.round_num += 1
 
-        log_text = f"Лог: 👹 Удар гоблина по вам на {self.enemy.damage} урона"
-        logger.debug(f"{log_text} Здоровье игрока: {self.player.hp}/{self.player.max_hp}")
-        self.last_battle_log = log_text
+            log_text = f"Лог: 👹 Удар гоблина по вам на {self.enemy.damage} урона"
+            logger.debug(f"{log_text} Здоровье игрока: {self.player.hp}/{self.player.max_hp}")
+            self.last_battle_log = log_text
+            return
+
+        self.finish_the_fight()
+
+    def create_embed_finish_battle(self) -> Embed:
+        if self.turn == "player":
+            embed = Embed(
+                title="🏁 Битва завершена!",
+                description=f"`👤` **Игрок: {self.player.username}** поверг **{self.enemy.name}** на {self.round_num} раунде!",
+                color=Colour.dark_green())
+            embed.add_field(name="`💖` Оставшееся HP", value=f"{self.player.hp}/{self.player.max_hp}")
+            embed.add_field(name="`✨` Получено опыта", value=f"0 XP")
+            embed.add_field(name="`💰` Получено золота", value=f"0 монет")
+            embed.set_footer(text=self.last_battle_log)
+            return embed
+        else:
+            embed = Embed(
+                title="🏁 Битва завершена!",
+                description=f"`👹` **Противник: {self.enemy.name}** избил **{self.player.username}** на {self.round_num} раунде!\n"
+                            "Позор... может в следующий раз хотя бы укусишь в ответ?\n\n"
+                            "В следующий раз будешь тренироваться на тараканах, челядь...",
+                color=Colour.dark_red())
+            embed.add_field(name="`💖` Оставшееся HP противника", value=f"{self.enemy.hp}/{self.enemy.max_hp}")
+            embed.set_footer(text=self.last_battle_log)
+            return embed
 
     def create_embed_battle(self, progress_bar=None) -> Embed:
         start_title = f"⚔️ Битва началась! Твой ход! Раунд {self.round_num}"

@@ -21,19 +21,23 @@ class FightView(View):
 
     @discord.ui.button(label="Атака", style=ButtonStyle.red)
     async def clb_attack_button(self, inter: Interaction, button: Button):
+        # TODO: Чтобы реакция была только от того кто автор сообщения
         response: InteractionResponse = inter.response
+
         self.battle.player_attack(button)
         await response.edit_message(embed=self.battle.create_embed_battle(), view=self)
 
-        progres_bar = ["▱ " for _ in range(6)]
+        progres_bar = ["▱ " for _ in range(5)]
         for i in range(len(progres_bar)):
             progres_bar[i] = "▰ "
             await inter.message.edit(embed=self.battle.create_embed_battle(progres_bar), view=self)
-            await asyncio.sleep(randint(2, 8) / 10)
+            await asyncio.sleep(randint(2, 6) / 10)
 
         self.battle.enemy_attack(button)
-
         await inter.message.edit(embed=self.battle.create_embed_battle(), view=self)
+
+        end_embed = self.battle.create_embed_finish_battle()
+        await inter.message.edit(embed=end_embed, view=None)  # TODO: новые кнопки
 
     @discord.ui.button(label="Побег с позором", style=ButtonStyle.gray)
     async def clb_run_button(self, inter: Interaction, button: Button):
