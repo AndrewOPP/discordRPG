@@ -68,3 +68,39 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY (role) REFERENCES roles(id)
 );
 """)
+
+    await db.execute_query("""
+CREATE TABLE IF NOT EXISTS items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    bonus_damage INT DEFAULT 0,
+    bonus_hp INT DEFAULT 0,
+    cost INT DEFAULT 0,
+    rarity INT CHECK(rarity BETWEEN 1 AND 10)
+);
+    """)
+
+    await db.execute_query("""
+CREATE TABLE IF NOT EXISTS user_items (
+    user_id BIGINT,
+    item_id INTEGER,
+    PRIMARY KEY (user_id, item_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);
+    """)
+
+    await db.execute_query("""
+INSERT INTO items (name, description, bonus_damage, bonus_hp, cost, rarity) VALUES
+('Wooden Sword', 'Простой деревянный меч. +2 урона.', 2, 0, 10, 1),
+('Leather Armor', 'Кожаная броня. +5 HP.', 0, 5, 15, 2),
+('Iron Axe', 'Тяжёлый топор. +5 урона.', 5, 0, 40, 3),
+('Steel Shield', 'Стальной щит. +15 HP.', 0, 15, 60, 4),
+('Fire Dagger', 'Огненный кинжал. +8 урона.', 8, 0, 85, 5),
+('Amulet of Life', 'Амулет жизни. +5 урона, +10 HP.', 5, 10, 120, 6),
+('Dark Blade', 'Клинок Тьмы. +15 урона.', 15, 0, 180, 7),
+('Dragon Scale Armor', 'Броня из чешуи дракона. +30 HP.', 0, 30, 250, 8),
+('Storm Hammer', 'Молот Шторма. +12 урона, +10 HP.', 12, 10, 300, 9),
+('Celestial Crown', 'Небесная корона. +20 урона, +25 HP.', 20, 25, 500, 10)
+  """)

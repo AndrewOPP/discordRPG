@@ -5,8 +5,11 @@ import asyncio
 from discord import ButtonStyle, Interaction, InteractionResponse
 from discord.ext import commands
 from discord.ui import View, Button
+
+from src.cogs.shop import ShopView
 from src.data.model_battle import Battle
 from src.data.model_enemy import Enemy
+from src.data.model_shop import Shop
 from src.data.model_user import User
 from src.logs import getLogger
 
@@ -52,6 +55,16 @@ class StartFightView(View):
         logger.debug(f"\n{user}\n{enemy}")
         await inter.message.delete()
         await response.send_message(embed=battle.create_embed_battle(), view=FightView(battle))
+
+    @discord.ui.button(label="Магазин", style=ButtonStyle.gray)
+    async def clb_shop_button(self, inter: Interaction, button: Button):
+        response: InteractionResponse = inter.response
+
+        user = await User.load(inter.user.id)
+        items = await db.fetch_all("SELECT * FROM items", row=True)
+        shop = Shop(user, [1, 2, 3])
+        await inter.message.delete()
+        await response.send_message(embed=shop.create_embed_shop(), view=ShopView(shop))
 
 
 class FightCog(commands.Cog):

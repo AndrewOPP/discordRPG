@@ -31,6 +31,8 @@ class CreateProfileView(View):
         await response.send_message(embed=embed, view=StartFightView())
 
 
+
+
 class StartCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -61,6 +63,7 @@ class StartCog(commands.Cog):
                 title="🏟️ Арена Гоблинов",
                 description=f"`{user.username}`, ты уже есть в наших рядах. Твое призвание - {role.name}!?")
             await response.send_message(embed=embed, view=StartFightView())
+
 
 
 async def setup(bot: commands.Bot):
