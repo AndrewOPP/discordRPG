@@ -11,6 +11,7 @@ from src.data.model_battle import Battle
 from src.data.model_enemy import Enemy
 from src.data.model_shop import Shop
 from src.data.model_user import User
+from src.data.shop_services_db import get_shop_items
 from src.logs import getLogger
 
 logger = getLogger(__name__)
@@ -63,10 +64,9 @@ class StartFightView(View):
     @discord.ui.button(label="Магазин", style=ButtonStyle.gray)
     async def clb_shop_button(self, inter: Interaction, button: Button):
         response: InteractionResponse = inter.response
-
+        items = await get_shop_items()
         user = await User.load(inter.user.id)
-        items = await db.fetch_all("SELECT * FROM items", row=True)
-        shop = Shop(user, [1, 2, 3])
+        shop = Shop(user, items)
         await inter.message.delete()
         await response.send_message(embed=shop.create_embed_shop(), view=ShopView(shop))
 

@@ -1,5 +1,5 @@
 import discord
-from discord import ButtonStyle, Interaction, InteractionResponse
+from discord import ButtonStyle, Interaction, InteractionResponse, Embed, Colour
 from discord.ui import View, Button
 from discord.ext import commands
 from src.logs import getLogger
@@ -11,25 +11,26 @@ class ShopView(View):
 
     def __init__(self, shop):
         super().__init__()
-        self.shop = shop
+        self.shop = shop.current_shop_items
 
-    @discord.ui.button(label="купить1", style=ButtonStyle.green)
+
+    @discord.ui.button(label="Купить предмет №1", style=ButtonStyle.green)
     async def clb_buy4_button(self, inter: Interaction, button: Button):
         response: InteractionResponse = inter.response
+        print(self.shop[0]["name"])
 
-    @discord.ui.button(label="купить2", style=ButtonStyle.red)
+    @discord.ui.button(label="Купить предмет №2", style=ButtonStyle.green)
     async def clb_buy3_button(self, inter: Interaction, button: Button):
         response: InteractionResponse = inter.response
+        print(self.shop[1]["name"])
 
-    @discord.ui.button(label="купить3", style=ButtonStyle.gray)
+    @discord.ui.button(label="Купить предмет №3", style=ButtonStyle.green)
     async def clb_buy2_button(self, inter: Interaction, button: Button):
         response: InteractionResponse = inter.response
+        print(self.shop[2]["name"])
 
-    @discord.ui.button(label="купить4", style=ButtonStyle.red)
-    async def clb_buy1_button(self, inter: Interaction, button: Button):
-        response: InteractionResponse = inter.response
 
-    @discord.ui.button(label="Уйти", style=ButtonStyle.green)
+    @discord.ui.button(label="Уйти", style=ButtonStyle.red)
     async def clb_left_button(self, inter: Interaction, button: Button):
         response: InteractionResponse = inter.response
 
