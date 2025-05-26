@@ -59,8 +59,7 @@ class StartFightView(View):
         enemy = Enemy.generate_enemy()
         battle = Battle(user, enemy)
         logger.debug(f"\n{user}\n{enemy}")
-        await inter.message.delete()
-        await response.send_message(embed=battle.create_embed_battle(), view=FightView(battle))
+        await response.edit_message(embed=battle.create_embed_battle(), view=FightView(battle))
 
     @discord.ui.button(label="Магазин", style=ButtonStyle.gray)
     async def clb_shop_button(self, inter: Interaction, button: Button):
@@ -68,8 +67,7 @@ class StartFightView(View):
         items = await get_shop_items()
         user = await User.load(inter.user.id)
         shop = Shop(user, items)
-        await inter.message.delete()
-        await response.send_message(embed=shop.create_embed_shop(), view=ShopView(shop))
+        await response.edit_message(embed=shop.create_embed_shop(), view=ShopView(shop))
 
 
 class FightCog(commands.Cog):

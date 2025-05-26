@@ -27,10 +27,7 @@ class CreateProfileView(View):
                         f"посоветовавшись, удостоили тебя звания '{role.name}'.\n"
                         f"Отныне твоя история такова: {role.description}."
                         f"Ступай и докажи, что ты заслуживаешь это звание!")
-        await inter.message.delete()
-        await response.send_message(embed=embed, view=StartFightView())
-
-
+        await response.edit_message(embed=embed, view=StartFightView())
 
 
 class StartCog(commands.Cog):
@@ -63,7 +60,6 @@ class StartCog(commands.Cog):
                 title="🏟️ Арена Гоблинов",
                 description=f"`{user.username}`, ты уже есть в наших рядах. Твое призвание - {role.name}!?")
             await response.send_message(embed=embed, view=StartFightView())
-
 
 
 async def setup(bot: commands.Bot):
