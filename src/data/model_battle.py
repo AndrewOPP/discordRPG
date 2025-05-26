@@ -1,26 +1,27 @@
-import asyncio
-from random import randint
-
-from discord import Interaction, Embed, Colour
-
+from discord import Embed, Colour
 from src.data.model_enemy import Enemy
 from src.data.model_user import User
-from src.utils import create_embed
 from src.logs import getLogger
+from src.config import settings
 
 logger = getLogger("Fight")
 
 
 class Battle:
-    def __init__(self, player: User, enemy):
+    def __init__(self, player: User, enemy: Enemy):
         # TODO Гоблин может сбежать при низком хп и будет победа
-        # TODO Награды за бой от скейла уровня гоблина
         self.player: User = player
         self.enemy: Enemy = enemy
         self.turn: str = "player"
         self.round_num: int = 1
         self.last_battle_log: str = None
         self.end_fight = False
+
+    def generate_fight_reward(self) -> dict:
+        return {
+            "exp": int(settings.game.exp_reward_base * (self.enemy.lvl * settings.game.exp_coef_reward)),
+            "coins": int(settings.game.coin_reward_base * (self.enemy.lvl * settings.game.coins_coef_reward_per_lvl))
+        }
 
     def finish_the_fight(self):
         if self.turn == "player":
@@ -33,9 +34,6 @@ class Battle:
 
         self.last_battle_log = log_text
         self.end_fight = True
-
-        # TODO отдельную функцию для выдачи награды и сохренение в бд
-        # TODO + coins
 
     def player_attack(self, button):
         button.disabled = True
@@ -65,15 +63,15 @@ class Battle:
 
         self.finish_the_fight()
 
-    def create_embed_finish_battle(self) -> Embed:
+    def create_embed_finish_battle(self, exp: int, coins: int) -> Embed:
         if self.turn == "player":
             embed = Embed(
                 title="🏁 Битва завершена!",
                 description=f"`👤` **Игрок: {self.player.username}** поверг **{self.enemy.name}** на {self.round_num} раунде!",
                 color=Colour.dark_green())
             embed.add_field(name="`💖` Оставшееся HP", value=f"{self.player.hp}/{self.player.max_hp}")
-            embed.add_field(name="`✨` Получено опыта", value=f"0 XP")
-            embed.add_field(name="`💰` Получено золота", value=f"0 монет")
+            embed.add_field(name="`✨` Получено опыта", value=f"{exp} XP")
+            embed.add_field(name="`💰` Получено золота", value=f"{coins} монет")
             embed.set_footer(text=self.last_battle_log)
             return embed
         else:

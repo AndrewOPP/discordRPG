@@ -8,7 +8,7 @@ from src.data.model_user import User
 
 
 class Shop:
-    #TODO КОГДА НЕДОСТАТОЧНО ДЕНЕГ, НЕЛЬЗЯ КУПИТЬ ПРЕДМЕТ (возможно выводить в сообщение типо недостаточно денег + дизейбить кнопку.)
+    #  TODO КОГДА НЕДОСТАТОЧНО ДЕНЕГ, НЕЛЬЗЯ КУПИТЬ ПРЕДМЕТ (возможно выводить в сообщение типо недостаточно денег + дизейбить кнопку.)
 
     def __init__(self, player: User, items):
         self.player: User = player
@@ -17,7 +17,7 @@ class Shop:
         self.current_shop_items_bought = [False, False, False]
 
     def random_three_items(self):
-        #чем больше редкость, тем меньше шанс
+        #  чем больше редкость, тем меньше шанс
         weights = [max(1, 11 - item["rarity"]) for item in self.items]
 
         random_items = random.choices(self.items, weights=weights, k=3)

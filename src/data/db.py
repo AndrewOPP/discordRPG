@@ -38,7 +38,6 @@ class Database:
                 return await cur.fetchone()
 
 
-
 db = Database()
 
 
@@ -61,6 +60,7 @@ CREATE TABLE IF NOT EXISTS users (
     role INT,
     lvl INT,
     exp INT,
+    coins INT DEFAULT 0,
     max_hp INT,
     hp INT,
     regen_hp INT,
@@ -92,16 +92,16 @@ CREATE TABLE IF NOT EXISTS user_items (
 );
     """)
 
-    # await db.execute_query("""
-    # INSERT OR IGNORE INTO items (name, description, bonus_damage, bonus_hp, cost, rarity) VALUES
-    # ('Wooden Sword', 'Простой деревянный меч. +2 урона.', 2, 0, 10, 1),
-    # ('Leather Armor', 'Кожаная броня. +5 HP.', 0, 5, 15, 2),
-    # ('Iron Axe', 'Тяжёлый топор. +5 урона.', 5, 0, 40, 3),
-    # ('Steel Shield', 'Стальной щит. +15 HP.', 0, 15, 60, 4),
-    # ('Fire Dagger', 'Огненный кинжал. +8 урона.', 8, 0, 85, 5),
-    # ('Amulet of Life', 'Амулет жизни. +5 урона, +10 HP.', 5, 10, 120, 6),
-    # ('Dark Blade', 'Клинок Тьмы. +15 урона.', 15, 0, 180, 7),
-    # ('Dragon Scale Armor', 'Броня из чешуи дракона. +30 HP.', 0, 30, 250, 8),
-    # ('Storm Hammer', 'Молот Шторма. +12 урона, +10 HP.', 12, 10, 300, 9),
-    # ('Celestial Crown', 'Небесная корона. +20 урона, +25 HP.', 20, 25, 500, 10)
-    #   """)
+#     await db.execute_query("""
+# INSERT OR IGNORE INTO items (name, description, bonus_damage, bonus_hp, cost, rarity) VALUES
+# ('Wooden Sword', 'Простой деревянный меч. +2 урона.', 2, 0, 10, 1),
+# ('Leather Armor', 'Кожаная броня. +5 HP.', 0, 5, 15, 2),
+# ('Iron Axe', 'Тяжёлый топор. +5 урона.', 5, 0, 40, 3),
+# ('Steel Shield', 'Стальной щит. +15 HP.', 0, 15, 60, 4),
+# ('Fire Dagger', 'Огненный кинжал. +8 урона.', 8, 0, 85, 5),
+# ('Amulet of Life', 'Амулет жизни. +5 урона, +10 HP.', 5, 10, 120, 6),
+# ('Dark Blade', 'Клинок Тьмы. +15 урона.', 15, 0, 180, 7),
+# ('Dragon Scale Armor', 'Броня из чешуи дракона. +30 HP.', 0, 30, 250, 8),
+# ('Storm Hammer', 'Молот Шторма. +12 урона, +10 HP.', 12, 10, 300, 9),
+# ('Celestial Crown', 'Небесная корона. +20 урона, +25 HP.', 20, 25, 500, 10)
+#   """)

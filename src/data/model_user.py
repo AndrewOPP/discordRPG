@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 from attr import dataclass
 from src.data.db import db
 from src.logs import getLogger
@@ -12,6 +14,7 @@ class User:
     role: int
     lvl: int
     exp: int
+    coins: int
     max_hp: int
     hp: int
     regen_hp: int
@@ -22,6 +25,12 @@ class User:
             return True
 
         return False
+
+    async def save_user(self, exp: int, coins: int):
+        query = "UPDATE users SET exp = exp + ?, coins = coins + ?, hp = ? WHERE id = ?"
+        params = (exp, coins, self.hp, self.id)
+        await db.execute_query(query, params)
+        logger.debug(f"Save User: {vars(self)}")
 
     @classmethod
     async def load(cls, uid: int) -> "User":

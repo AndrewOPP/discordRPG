@@ -1,5 +1,4 @@
 from attr import dataclass
-from src.data.db import db
 from src.logs import getLogger
 
 logger = getLogger(__name__)

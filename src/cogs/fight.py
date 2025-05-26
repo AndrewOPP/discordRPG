@@ -1,5 +1,4 @@
 from random import randint
-
 import discord
 import asyncio
 from discord import ButtonStyle, Interaction, InteractionResponse
@@ -40,7 +39,9 @@ class FightView(View):
         self.battle.enemy_attack(button)
         await inter.message.edit(embed=self.battle.create_embed_battle(), view=self)
 
-        end_embed = self.battle.create_embed_finish_battle()
+        reward = self.battle.generate_fight_reward()
+        end_embed = self.battle.create_embed_finish_battle(**reward)
+        await self.battle.player.save_user(**reward)
         await inter.message.edit(embed=end_embed, view=None)  # TODO: новые кнопки
 
     @discord.ui.button(label="Побег с позором", style=ButtonStyle.gray)
