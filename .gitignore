@@ -1,6 +1,10 @@
 .idea/
 .venv/
-
+pycache/
 .env
 src/logs/*.log
 *.db
+echo "__pycache__/
+*.py[cod]
+*.pyc
+*.pyo" > .gitignore
