@@ -113,3 +113,27 @@ class Battle:
 
         embed.set_footer(text=self.last_battle_log if self.last_battle_log else start_footer)
         return embed
+
+
+class BattleManager:
+    def __init__(self, player: User):
+        self.player: User = player
+        self.battle: Battle = None
+        self.fight_count: int = 1
+
+    @classmethod
+    async def create(cls, user_id) -> "BattleManager":
+        player = await User.load(user_id)
+        manager = cls(player)
+        await manager.create_fight()
+        return manager
+
+    async def create_fight(self) -> "Battle":
+        user = await User.load(self.player.id)
+        enemy = Enemy.generate_enemy()  # TODO: Скейл способности от лвла
+        self.battle = Battle(user, enemy)
+        return self.battle
+
+    async def next_fight(self) -> "Battle":
+        self.fight_count += 1
+        return await self.create_fight()
