@@ -83,9 +83,10 @@ CREATE TABLE IF NOT EXISTS items (
 
     await db.execute_query("""
 CREATE TABLE IF NOT EXISTS user_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id BIGINT,
     item_id INTEGER,
-    PRIMARY KEY (user_id, item_id),
+    quantity INTEGER DEFAULT 1,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (item_id) REFERENCES items(id)
 );

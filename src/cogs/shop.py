@@ -11,28 +11,38 @@ class ShopView(View):
 
     def __init__(self, shop):
         super().__init__()
-        self.shop = shop.current_shop_items
+        self.current_shop_items = shop.current_shop_items
+        self.shop = shop
 
+        for i, item in enumerate(self.current_shop_items):
+            button = Button(
+                label=f"Купить предмет №{i + 1}",
+                style=ButtonStyle.green,
+                custom_id=f"buy_item_{i}"
+            )
 
-    @discord.ui.button(label="Купить предмет №1", style=ButtonStyle.green)
-    async def clb_buy4_button(self, inter: Interaction, button: Button):
-        response: InteractionResponse = inter.response
-        print(self.shop[0]["name"])
+            # Привязка обработчика с текущим значением i
+            button.callback = self._make_callback(i, button)
+            self.add_item(button)
 
-    @discord.ui.button(label="Купить предмет №2", style=ButtonStyle.green)
-    async def clb_buy3_button(self, inter: Interaction, button: Button):
-        response: InteractionResponse = inter.response
-        print(self.shop[1]["name"])
+            if i + 1 == 3:
+                button = Button(
+                    label=f"Уйти",
+                    style=ButtonStyle.red,
+                )
+                button.callback = self._make_callback(i+1, button)
+                self.add_item(button)
 
-    @discord.ui.button(label="Купить предмет №3", style=ButtonStyle.green)
-    async def clb_buy2_button(self, inter: Interaction, button: Button):
-        response: InteractionResponse = inter.response
-        print(self.shop[2]["name"])
-
-
-    @discord.ui.button(label="Уйти", style=ButtonStyle.red)
-    async def clb_left_button(self, inter: Interaction, button: Button):
-        response: InteractionResponse = inter.response
+    def _make_callback(self, index, button):
+        async def callback(interaction: Interaction):
+            button.disabled = True
+            item = self.current_shop_items[index]
+            await self.shop.add_item_to_user(item["id"], index)
+            await interaction.response.edit_message(
+                embed=self.shop.create_embed_shop(),
+                view=self
+            )
+        return callback
 
 
 class ShopCog(commands.Cog):
