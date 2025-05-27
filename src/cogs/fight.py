@@ -6,6 +6,7 @@ from discord.ext import commands
 from discord.ui import View, Button
 from src.cogs.shop import ShopView
 from src.data.model_battle import Battle, BattleManager
+from src.data.model_inventory import SimpleInventory
 from src.data.model_shop import Shop
 from src.data.model_user import User
 from src.data.shop_services_db import get_shop_items
@@ -86,6 +87,16 @@ class StartFightView(View):
         user = await User.load(inter.user.id)
         shop = Shop(user, items)
         await response.edit_message(embed=shop.create_embed_shop(), view=ShopView(shop))
+
+    @discord.ui.button(label="Инвентарь", style=ButtonStyle.gray)
+    async def clb_inventory_button(self, inter: Interaction, button: Button):
+        await inter.response.defer()
+
+        user = await User.load(inter.user.id)
+        inventory = await SimpleInventory(user).init()
+        embed = await inventory.create_embed_inventory()
+
+        await inter.edit_original_response(embed=embed)
 
 
 class FightCog(commands.Cog):
