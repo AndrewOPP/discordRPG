@@ -5,16 +5,17 @@ from discord import Embed, Colour
 
 from src.data.db import db
 from src.data.model_user import User
+from src.utils import create_embed
 
 
 class Shop:
-    #  TODO КОГДА НЕДОСТАТОЧНО ДЕНЕГ, НЕЛЬЗЯ КУПИТЬ ПРЕДМЕТ (возможно выводить в сообщение типо недостаточно денег + дизейбить кнопку.)
 
     def __init__(self, player: User, items):
         self.player: User = player
         self.items: list = items
         self.current_shop_items = self.random_three_items()
-        self.current_shop_items_bought = [False, False, False]
+        self.current_shop_items_bought = [[False, True], [False, True], [False, True]]
+        self.coins = int(player.coins)
 
     def random_three_items(self):
         #  чем больше редкость, тем меньше шанс
@@ -22,18 +23,30 @@ class Shop:
 
         random_items = random.choices(self.items, weights=weights, k=3)
 
-        for item in random_items:
-            print(f"{item['name']} (редкость: {item['rarity']})")
-
         return random_items
 
-    async def add_item_to_user(self, item_id: int, index):
-        self.current_shop_items_bought[index] = True
+    def coins_minus(self, amount):
+        self.coins -= int(amount)
+
+    def coins_enough_check(self, cost):
+        if self.coins > cost:
+            return True
+        return False
+
+    async def add_item_to_user(self, item_id: int, item_cost: int, index):
+        if not self.coins_enough_check(item_cost):
+            self.current_shop_items_bought[index][1] = False
+            return
+
         query = """
         SELECT quantity FROM user_items
         WHERE user_id = ? AND item_id = ?
         """
         result = await db.fetch_one(query, (self.player.id, item_id))
+
+        self.current_shop_items_bought[index][0] = True
+
+        self.coins_minus(item_cost)
 
         if result:
             update_query = """
@@ -42,18 +55,30 @@ class Shop:
             WHERE user_id = ? AND item_id = ?
             """
             await db.execute_query(update_query, (self.player.id, item_id))
+            update_query = f"""
+                      UPDATE users
+                      SET coins = ?
+                      WHERE id = ?
+                      """
+            await db.execute_query(update_query, (self.coins, self.player.id))
         else:
             insert_query = """
             INSERT INTO user_items (user_id, item_id, quantity)
             VALUES (?, ?, 1)
             """
             await db.execute_query(insert_query, (self.player.id, item_id))
+            update_query = f"""
+                      UPDATE users
+                      SET coins = ?
+                      WHERE id = ?
+                      """
+            await db.execute_query(update_query, (self.coins, self.player.id))
 
     def create_embed_shop(self):
-        greetings = "☄️Приветствую тебя, странник! Желаешь прикупить моих безделушек?☄️\n\u200b"
+        greetings = f"Прилавка Джо\n ☄️Приветствую тебя, странник! Желаешь прикупить моих безделушек?☄️\n\u200b"
 
         embed = Embed(
-            title="Прилавка Джо",
+            title=f"💰Твой баланс: {self.coins} монет",
             description=greetings,
             color=Colour.yellow())
 
@@ -61,15 +86,23 @@ class Shop:
             rarity_stars = "⭐" * math.ceil(item["rarity"] / 2)
             is_last = index == len(self.current_shop_items) - 1
             value = (
-                f"\n💎Цена: {item['cost']} золота\n"
+                f"\n💎Цена: {item['cost']} монет\n"
                 f"💪Описание: {item['description']}"
-            )
+            ) if self.current_shop_items_bought[index][1] else "Ты не можешь это купить, недостаточно денег"
             if not is_last:
                 value += "\n\u200b"
 
             embed.add_field(
                 name=f"{item['name']} {rarity_stars}",
-                value=value if not self.current_shop_items_bought[index] else "КУПЛЕНО",
+                value=value if not self.current_shop_items_bought[index][0] else "КУПЛЕНО",
                 inline=False
             )
+        return embed
+
+    def create_leave_embed(self, inter):
+        embed = create_embed(
+            inter.user,
+            title="🏟️ Арена Гоблинов",
+            description=f"`{self.player.username}`, ты уже есть в наших рядах. Твое призвание - {self.player.role}!?")
+
         return embed

@@ -40,6 +40,7 @@ class FightView(View):
         self.battle_manager: BattleManager = battle_manager
         self.battle: Battle = battle_manager.battle
 
+
     @discord.ui.button(label="Атака", style=ButtonStyle.red)
     async def clb_attack_button(self, inter: Interaction, button: Button):
         # TODO: Чтобы реакция была только от того кто автор сообщения

@@ -2,7 +2,9 @@ import discord
 from discord import ButtonStyle, Interaction, InteractionResponse, Embed, Colour
 from discord.ui import View, Button
 from discord.ext import commands
+from src.data.model_role import Role
 from src.logs import getLogger
+
 
 logger = getLogger(__name__)
 
@@ -18,7 +20,6 @@ class ShopView(View):
             button = Button(
                 label=f"Купить предмет №{i + 1}",
                 style=ButtonStyle.green,
-                custom_id=f"buy_item_{i}"
             )
 
             # Привязка обработчика с текущим значением i
@@ -35,20 +36,24 @@ class ShopView(View):
 
     def _make_callback(self, index, button):
         async def callback(interaction: Interaction):
-            button.disabled = True
-            item = self.current_shop_items[index]
-            await self.shop.add_item_to_user(item["id"], index)
-            await interaction.response.edit_message(
-                embed=self.shop.create_embed_shop(),
-                view=self
-            )
+            if button.label == "Уйти":
+                from src.cogs.fight import StartFightView
+                embed = self.shop.create_leave_embed(interaction)
+                await interaction.response.edit_message(embed=embed, view=StartFightView())
+            else:
+                button.disabled = True
+                item = self.current_shop_items[index]
+                await self.shop.add_item_to_user(item["id"], item["cost"], index)
+                await interaction.response.edit_message(
+                    embed=self.shop.create_embed_shop(),
+                    view=self)
+
         return callback
 
 
 class ShopCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
 
     @commands.Cog.listener()
     async def on_ready(self):
