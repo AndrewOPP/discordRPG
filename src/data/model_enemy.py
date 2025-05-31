@@ -1,5 +1,7 @@
+import random
 from attr import dataclass
 from src.logs import getLogger
+from src.config import settings
 
 logger = getLogger(__name__)
 
@@ -14,14 +16,17 @@ class Enemy:
     damage: int
 
     @classmethod
-    def generate_enemy(cls):
+    def generate_enemy(cls, fight_count: int):
+        lvl: int = fight_count + random.choice(settings.game.enemy_lvl_random)
+        damage: float = round(lvl ** random.choice(settings.game.enemy_damage_per_lvl), 1)
+        hp: int = lvl * settings.game.enemy_base_hp_per_lvl
         stats = {
             "name": "Гоблин",
-            "lvl": 1,
-            "max_hp": 50,
-            "hp": 5,
+            "lvl": lvl,
+            "max_hp": hp,
+            "hp": hp,
             "regen_hp": 0,
-            "damage": 2,
+            "damage": damage,
         }
         return cls(**stats)
 

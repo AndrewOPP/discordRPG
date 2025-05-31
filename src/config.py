@@ -8,6 +8,10 @@ class GameConfig(BaseSettings):
     coin_reward_base: int = 10
     coins_coef_reward_per_lvl: float = 2.5
 
+    enemy_base_hp_per_lvl: int = 30
+    enemy_damage_per_lvl: tuple = (0.5, 1.5)
+    enemy_lvl_random: tuple = (0, 3)
+
 
 class DiscordSettings(BaseSettings):
     token: str

@@ -45,7 +45,6 @@ class SimpleInventory:
         )
 
         items_text = self.format_items_text()
-        print(items_text)
         embed.add_field(
             name="🎒 Предметы:",
             value=items_text[:1024],

@@ -1,8 +1,6 @@
 import math
 import random
-
 from discord import Embed, Colour
-
 from src.data.db import db
 from src.data.model_user import User
 from src.utils import create_embed
@@ -38,10 +36,7 @@ class Shop:
             self.current_shop_items_bought[index][1] = False
             return
 
-        query = """
-        SELECT quantity FROM user_items
-        WHERE user_id = ? AND item_id = ?
-        """
+        query = "SELECT quantity FROM user_items WHERE user_id = ? AND item_id = ?"
         result = await db.fetch_one(query, (self.player.id, item_id))
 
         self.current_shop_items_bought[index][0] = True
@@ -49,30 +44,14 @@ class Shop:
         self.coins_minus(item_cost)
 
         if result:
-            update_query = """
-            UPDATE user_items
-            SET quantity = quantity + 1
-            WHERE user_id = ? AND item_id = ?
-            """
+            update_query = "UPDATE user_items SET quantity = quantity + 1 WHERE user_id = ? AND item_id = ?"
             await db.execute_query(update_query, (self.player.id, item_id))
-            update_query = f"""
-                      UPDATE users
-                      SET coins = ?
-                      WHERE id = ?
-                      """
-            await db.execute_query(update_query, (self.coins, self.player.id))
         else:
-            insert_query = """
-            INSERT INTO user_items (user_id, item_id, quantity)
-            VALUES (?, ?, 1)
-            """
+            insert_query = "INSERT INTO user_items (user_id, item_id, quantity) VALUES (?, ?, 1)"
             await db.execute_query(insert_query, (self.player.id, item_id))
-            update_query = f"""
-                      UPDATE users
-                      SET coins = ?
-                      WHERE id = ?
-                      """
-            await db.execute_query(update_query, (self.coins, self.player.id))
+
+        update_query = "UPDATE users SET coins = ? WHERE id = ?"""
+        await db.execute_query(update_query, (self.coins, self.player.id))
 
     def create_embed_shop(self):
         greetings = f"Прилавка Джо\n ☄️Приветствую тебя, странник! Желаешь прикупить моих безделушек?☄️\n\u200b"

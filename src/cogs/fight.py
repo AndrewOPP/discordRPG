@@ -29,7 +29,7 @@ class NextFightView(View):
         await self.battle_manager.next_fight()
         await response.edit_message(embed=self.battle_manager.battle.create_embed_battle(), view=FightView(self.battle_manager))
 
-    @discord.ui.button(label="Уйти.", style=ButtonStyle.blurple)
+    @discord.ui.button(label="Уйти.", style=ButtonStyle.gray)
     async def clb_quit_button(self, inter: Interaction, button: Button):
         ...
 
@@ -40,7 +40,6 @@ class FightView(View):
         super().__init__()
         self.battle_manager: BattleManager = battle_manager
         self.battle: Battle = battle_manager.battle
-
 
     @discord.ui.button(label="Атака", style=ButtonStyle.red)
     async def clb_attack_button(self, inter: Interaction, button: Button):
@@ -90,13 +89,13 @@ class StartFightView(View):
 
     @discord.ui.button(label="Инвентарь", style=ButtonStyle.gray)
     async def clb_inventory_button(self, inter: Interaction, button: Button):
-        await inter.response.defer()
+        response: InteractionResponse = inter.response
 
         user = await User.load(inter.user.id)
         inventory = await SimpleInventory(user).init()
         embed = await inventory.create_embed_inventory()
 
-        await inter.edit_original_response(embed=embed)
+        await response.edit_message(embed=embed)
 
 
 class FightCog(commands.Cog):

@@ -130,7 +130,7 @@ class BattleManager:
 
     async def create_fight(self) -> "Battle":
         user = await User.load(self.player.id)
-        enemy = Enemy.generate_enemy()  # TODO: Скейл способности от лвла
+        enemy = Enemy.generate_enemy(self.fight_count)
         self.battle = Battle(user, enemy)
         return self.battle
 
