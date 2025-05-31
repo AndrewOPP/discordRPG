@@ -1,6 +1,6 @@
 from discord import Embed, Colour
-from src.data.model_enemy import Enemy
-from src.data.model_user import User
+from src.models.enemy import Enemy
+from src.models.user import User
 from src.logs import getLogger
 from src.config import settings
 

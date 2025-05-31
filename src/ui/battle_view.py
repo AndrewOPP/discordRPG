@@ -1,18 +1,14 @@
+import asyncio
 from random import randint
 import discord
-import asyncio
 from discord import ButtonStyle, Interaction, InteractionResponse
-from discord.ext import commands
 from discord.ui import View, Button
-from src.cogs.shop import ShopView
-from src.data.model_battle import Battle, BattleManager
-from src.data.model_inventory import SimpleInventory
-from src.data.model_shop import Shop
-from src.data.model_user import User
+from src.ui.shop_view import ShopView
+from src.models.battle import BattleManager, Battle
+from src.models.inventory import SimpleInventory
+from src.models.shop import Shop
+from src.models.user import User
 from src.data.shop_services_db import get_shop_items
-from src.logs import getLogger
-
-logger = getLogger(__name__)
 
 
 class NextFightView(View):
@@ -96,18 +92,3 @@ class StartFightView(View):
         embed = await inventory.create_embed_inventory()
 
         await response.edit_message(embed=embed)
-
-
-class FightCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        logger.info(f"Cog {self.__class__.__name__} is loaded")
-
-
-async def setup(bot: commands.Bot):
-    await bot.add_cog(FightCog(bot))
-
-

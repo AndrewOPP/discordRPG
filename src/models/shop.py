@@ -2,7 +2,7 @@ import math
 import random
 from discord import Embed, Colour
 from src.data.db import db
-from src.data.model_user import User
+from src.models.user import User
 from src.utils import create_embed
 
 

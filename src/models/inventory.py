@@ -1,8 +1,5 @@
 from discord import Colour, Embed
-from typing import List, Optional
-from src.data.model_user import User
 from src.data.db import db
-from dataclasses import dataclass
 
 
 class SimpleInventory:
