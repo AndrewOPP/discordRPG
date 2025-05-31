@@ -3,12 +3,9 @@ from random import randint
 import discord
 from discord import ButtonStyle, Interaction, InteractionResponse
 from discord.ui import View, Button
-from src.ui.shop_view import ShopView
 from src.models.battle import BattleManager, Battle
-from src.models.inventory import SimpleInventory
-from src.models.shop import Shop
-from src.models.user import User
-from src.data.shop_services_db import get_shop_items
+from src.ui.create_embeds import create_start_embed, create_run_embed
+from src.ui.run_view import RunView
 
 
 class NextFightView(View):
@@ -58,37 +55,14 @@ class FightView(View):
             reward = self.battle.generate_fight_reward()
             end_embed = self.battle.create_embed_finish_battle(**reward)
             await self.battle.player.save_user(**reward)
-            await inter.message.edit(embed=end_embed, view=NextFightView(self.battle_manager))  # TODO: новые кнопки BATTLE MANAGER
+            await inter.message.edit(embed=end_embed, view=NextFightView(self.battle_manager))
 
     @discord.ui.button(label="Побег с позором", style=ButtonStyle.gray)
     async def clb_run_button(self, inter: Interaction, button: Button):
-        # TODO
-        ...
-
-
-class StartFightView(View):
-    """Кнопка для создания битвы"""
-    @discord.ui.button(label="В бой!", style=ButtonStyle.red)
-    async def clb_profile_button(self, inter: Interaction, button: Button):
         response: InteractionResponse = inter.response
 
-        battle_manager = await BattleManager.create(inter.user.id)
-        await response.edit_message(embed=battle_manager.battle.create_embed_battle(), view=FightView(battle_manager))
+        await self.battle.player.save_user()
+        embed = create_run_embed(inter.user)
+        await response.edit_message(embed=embed, view=RunView())
 
-    @discord.ui.button(label="Магазин", style=ButtonStyle.gray)
-    async def clb_shop_button(self, inter: Interaction, button: Button):
-        response: InteractionResponse = inter.response
-        items = await get_shop_items()
-        user = await User.load(inter.user.id)
-        shop = Shop(user, items)
-        await response.edit_message(embed=shop.create_embed_shop(), view=ShopView(shop))
 
-    @discord.ui.button(label="Инвентарь", style=ButtonStyle.gray)
-    async def clb_inventory_button(self, inter: Interaction, button: Button):
-        response: InteractionResponse = inter.response
-
-        user = await User.load(inter.user.id)
-        inventory = await SimpleInventory(user).init()
-        embed = await inventory.create_embed_inventory()
-
-        await response.edit_message(embed=embed)

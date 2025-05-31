@@ -30,7 +30,7 @@ class ShopView(View):
     def _make_callback(self, index, button):
         async def callback(interaction: Interaction):
             if button.label == "Уйти":
-                from src.ui.battle_view import StartFightView
+                from src.ui.start_view import StartFightView
                 embed = self.shop.create_leave_embed(interaction)
                 await interaction.response.edit_message(embed=embed, view=StartFightView())
             else:

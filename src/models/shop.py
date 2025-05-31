@@ -3,7 +3,7 @@ import random
 from discord import Embed, Colour
 from src.data.db import db
 from src.models.user import User
-from src.utils import create_embed
+from src.ui.create_embeds import create_embed
 
 
 class Shop:

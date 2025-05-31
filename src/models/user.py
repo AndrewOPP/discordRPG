@@ -26,7 +26,9 @@ class User:
 
         return False
 
-    async def save_user(self, exp: int, coins: int):
+    async def save_user(self, exp: int = None, coins: int = None):
+        if not exp and not coins:
+            exp, coins = self.exp, self.coins
         query = "UPDATE users SET exp = exp + ?, coins = coins + ?, hp = ? WHERE id = ?"
         params = (exp, coins, self.hp, self.id)
         await db.execute_query(query, params)

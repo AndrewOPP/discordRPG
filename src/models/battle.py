@@ -137,3 +137,4 @@ class BattleManager:
     async def next_fight(self) -> "Battle":
         self.fight_count += 1
         return await self.create_fight()
+

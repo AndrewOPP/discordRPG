@@ -1,10 +1,10 @@
 import discord
 from discord import ButtonStyle, Interaction, InteractionResponse
 from discord.ui import View, Button
-from src.ui.battle_view import StartFightView
+from src.ui.start_view import StartFightView
 from src.models.role import Role
 from src.models.user import User
-from src.utils import create_embed
+from src.ui.create_embeds import create_embed
 
 
 class CreateProfileView(View):
