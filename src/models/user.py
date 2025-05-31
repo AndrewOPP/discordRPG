@@ -20,6 +20,9 @@ class User:
     regen_hp: int
     damage: int
 
+    def __str__(self):
+        return f"{self.username} (Lvl {self.lvl}) — HP: {self.hp}/{self.max_hp}, damage: {self.damage}"
+
     def is_alive(self):
         if self.hp > 0:
             return True

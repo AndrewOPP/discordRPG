@@ -15,6 +15,9 @@ class Enemy:
     regen_hp: int
     damage: int
 
+    def __str__(self):
+        return f"{self.name} (Lvl {self.lvl}) — HP: {self.hp}/{self.max_hp}, damage: {self.damage}"
+
     @classmethod
     def generate_enemy(cls, fight_count: int):
         lvl: int = fight_count + random.choice(settings.game.enemy_lvl_random)

@@ -7,7 +7,6 @@ from src.ui.create_embeds import create_embed
 
 
 class Shop:
-
     def __init__(self, player: User, items):
         self.player: User = player
         self.items: list = items
@@ -16,7 +15,6 @@ class Shop:
         self.coins = int(player.coins)
 
     def random_three_items(self):
-        #  чем больше редкость, тем меньше шанс
         weights = [max(1, 11 - item["rarity"]) for item in self.items]
 
         random_items = random.choices(self.items, weights=weights, k=3)
